@@ -20,62 +20,134 @@ kali_focus_workspace/
     └── docker-compose.yml # Orchestration
 ```
 
-## Key Files Explained
+# Bug Bounty Thinking Workspace (Phase 1)
 
--   **backend/server.js**: Implements the "Senior Analyst" logic. It strictly filters keywords (exploit, payload) and forces the AI response into a structured `{ observation, interpretation, worth }` format. It also manages the session state (Scope Locking).
--   **frontend/src/App.jsx**: The immutable single-screen interface. It creates the grid layout and manages the state of the Scope Panel (preventing edits after confirmation).
--   **infrastructure/Dockerfile.kali**: A minimal Kali install that starts `x11vnc` and `websockify` automatically, exposing a browser-compatible VNC stream on port 6080.
+A browser-based Kali Linux workspace with an AI analyst that helps reduce confusion, preserve context, and support decision-making during authorized security testing.
 
-## Run Instructions
-
-### Prerequisites
--   Docker Desktop installed and running.
--   Node.js (v18+) installed.
-
-### Steps
-
-1.  **Start Infrastructure (Kali Container)**
-    Open a terminal in `infrastructure/` and run:
-    ```powershell
-    docker-compose up --build
-    ```
-    *Wait for the container to start. It will expose port 6080.*
-
-2.  **Start Backend**
-    Open a new terminal in `backend/` and run:
-    ```powershell
-    npm install
-    npm start
-    ```
-    *Server runs on port 3001.*
-
-3.  **Start Frontend**
-    Open a new terminal in `frontend/` and run:
-    ```powershell
-    npm install
-    npm run dev
-    ```
-    *Frontend runs on port 3000.*
-
-4.  **Access App**
-    Open Chrome/Firefox and navigate to `http://localhost:3000`.
-
-## Docker Setup
-
--   **Image:** `kalilinux/kali-rolling` base.
--   **Services:** `xfce4` (Desktop), `x11vnc` (VNC Server), `novnc` (Web Viewer).
--   **Isolation:** The container is logically isolated. No filesystem mounts connect the container to the host machine's sensitive files.
-
-## Environment Variables
-
-None required for Phase 1. 
-(Port 3000, 3001, and 6080 are hardcoded for the MVP).
+This project is **not** an automated hacking tool.  
+It does not exploit systems, generate payloads, or run attacks on behalf of users.
 
 ---
 
-## Validation Checklist
+## What This Is
 
--   [x] **No Exploit Automation:** The AI backend explicitly checks for "exploit" keywords and refuses them.
--   [x] **Single Screen:** CSS enforces a non-scrollable 100vh grid.
--   [x] **Read-Only AI:** The AI cannot execute commands; it only receives string input from the user.
--   [x] **Scope Gating:** The AI endpoint requires a confirmed scope session before accepting input.
+This application provides:
+
+- A **browser-based Kali Linux environment** (ephemeral, per session)
+- A **single-screen workspace** designed to reduce cognitive overload
+- An **AI assistant** that:
+  - interprets user-provided tool output
+  - helps prioritize effort
+  - supports scope awareness
+  - assists with documentation clarity
+
+All testing actions are **user-initiated and user-executed**.
+
+---
+
+## What This Is NOT
+
+This project explicitly does **not** include:
+
+- ❌ Exploit or payload generation  
+- ❌ Automated scanning or recon  
+- ❌ Command execution by AI  
+- ❌ Vulnerability exploitation guidance  
+- ❌ Target discovery or scope expansion  
+- ❌ Persistent environments or long-term storage  
+- ❌ Collaboration or team workflows  
+
+If you are looking for a tool that automates attacks or bypasses security controls, this is **not** that tool.
+
+---
+
+## Design Principles
+
+- **Clarity over speed**  
+- **Interpretation over instruction**  
+- **User responsibility over automation**  
+- **Scope awareness at all times**  
+
+The goal is to help users decide *what matters* — not to tell them *how to break things*.
+
+---
+
+## Phase 1 Scope
+
+Phase 1 is intentionally minimal and exists to validate one thing:
+
+> Can a structured workspace with AI interpretation reduce frustration and wasted effort for bug bounty hunters?
+
+Phase 1 includes:
+- Single-screen UI
+- Scope input and gating
+- Ephemeral Kali Linux session
+- Read-only AI interpretation panel
+- Notes and evidence capture
+
+Anything outside this list is out of scope for Phase 1.
+
+---
+
+## Safety & Responsibility
+
+- Users are responsible for ensuring they have **explicit authorization** to test any systems.
+- Users must provide valid scope before AI assistance is enabled.
+- The AI assistant does not perform attacks or suggest exploitation steps.
+- Sessions are isolated and ephemeral.
+
+This project is built to operate within ethical and legal boundaries.
+
+---
+
+## Local Development
+
+> **Note:** This project is under active development. Expect rough edges.
+
+### Prerequisites
+
+- Node.js (18+ recommended)
+- Docker
+- A system capable of running containers
+- (Optional) A supported VNC service (Kasm or Guacamole)
+
+### Setup
+
+```bash
+git clone <repo-url>
+cd <repo>
+cp .env.example .env
+npm install
+npm run dev
+Environment variables are documented in .env.example.
+
+Project Structure
+/frontend    # React / UI
+/backend     # API, session management, AI guardrails
+/ai          # AI prompt contracts and enforcement
+/infra       # Container and VNC setup
+PHASE_1_LOCK.md
+Contribution Status
+This project is currently in private alpha development.
+
+Features are locked to Phase 1
+
+Feedback is focused on clarity, friction, and usability
+
+Feature requests outside scope are logged but not implemented
+
+Roadmap (High-Level)
+Phase 1: Private alpha (current)
+
+Phase 1.5: Clarity and UX iteration
+
+Phase 2: Deeper analysis and reporting assistance (no automation)
+
+There is no timeline for public release.
+
+Disclaimer
+This software is provided as-is, without warranty.
+
+The maintainers are not responsible for misuse, unauthorized testing, or violations of program rules or law. Use responsibly.
+
+
