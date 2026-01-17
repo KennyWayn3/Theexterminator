@@ -1,0 +1,48 @@
+FROM kalilinux/kali-rolling
+
+# Non-interactive installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install core tools (minimal set for analysis)
+# Including websockify and x11vnc for web-based access
+# xfce4 for lightweight desktop
+RUN apt-get update && apt-get install -y \
+    kali-linux-headless \
+    xfce4 \
+    xfce4-goodies \
+    x11vnc \
+    xvfb \
+    novnc \
+    websockify \
+    net-tools \
+    python3-numpy \
+    dbus-x11 \
+    && apt-get clean
+
+# Setup VNC user
+RUN useradd -m -s /bin/bash analyst
+RUN echo "analyst:kali" | chpasswd
+
+# Setup VNC resolution and startup
+ENV RESOLUTION=1280x800
+ENV DISPLAY=:1
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+# Start virtual display\n\
+Xvfb :1 -screen 0 $RESOLUTION"x24" &\n\
+sleep 2\n\
+# Start Window Manager\n\
+DISPLAY=:1 startxfce4 &\n\
+# Start VNC Server (no password for local container networking, guarded by app logic)\n\
+x11vnc -display :1 -nopw -listen localhost -xkb -ncache 10 -ncache_cr &\n\
+# Start NoVNC Websocket proxy\n\
+/usr/share/novnc/utils/launch.sh --vnc localhost:5900 --listen 6080\n\
+' > /start.sh
+
+RUN chmod +x /start.sh
+
+USER analyst
+WORKDIR /home/analyst
+
+CMD ["/start.sh"]

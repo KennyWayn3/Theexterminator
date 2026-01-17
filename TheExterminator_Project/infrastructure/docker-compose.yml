@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app-backend:
+    build: ../backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - NODE_ENV=development
+
+  # For the MVP, we can spin up one static Kali instance to demonstrate
+  # In production, the backend spawns these dynamically.
+  kali-workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile.kali
+    ports:
+      - "6080:6080"
+    shm_size: '2gb' # Browser needs memory
+    cap_add:
+      - NET_ADMIN # Often needed for some network analysis tools, can restrict later
+    restart: "no"
